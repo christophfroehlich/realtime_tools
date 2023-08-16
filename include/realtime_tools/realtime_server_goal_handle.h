@@ -130,9 +130,11 @@ public:
 
   void execute()
   {
+    RCLCPP_WARN(logger_, "RT execute requested");
     if (!req_succeed_ && !req_abort_ && !req_cancel_) {
       std::lock_guard<std::mutex> guard(mutex_);
       req_execute_ = true;
+      RCLCPP_WARN(logger_, "RT execute registered");
     }
   }
 
@@ -149,18 +151,22 @@ public:
     try {
       if (req_execute_ && !gh_->is_executing() && gh_->is_active() && !gh_->is_canceling()) {
         gh_->execute();
+        RCLCPP_WARN(logger_, "RT execute");
       }
       if (req_abort_ && gh_->is_executing()) {
         gh_->abort(req_result_);
         req_abort_ = false;
+        RCLCPP_WARN(logger_, "RT abort");
       }
       if (req_cancel_ && gh_->is_active()) {
         gh_->canceled(req_result_);
         req_cancel_ = false;
+        RCLCPP_WARN(logger_, "RT cancel");
       }
       if (req_succeed_ && !gh_->is_canceling()) {
         gh_->succeed(req_result_);
         req_succeed_ = false;
+        RCLCPP_WARN(logger_, "RT succeed");
       }
       if (req_feedback_ && gh_->is_executing()) {
         gh_->publish_feedback(req_feedback_);
