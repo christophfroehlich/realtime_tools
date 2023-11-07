@@ -45,12 +45,16 @@ TEST(RealtimeClock, get_system_time)
   RealtimeClock rt_clock(clock);
   // Wait for time to be available
   rclcpp::Time last_rt_time;
+  std::cout << "starting loop" << std::endl;
   for (int i = 0; i < ATTEMPTS && rclcpp::Time() == last_rt_time; ++i) {
     std::this_thread::sleep_for(DELAY);
     last_rt_time = rt_clock.now(rclcpp::Time());
   }
+  std::cout << "end loop" << std::endl;
   ASSERT_NE(rclcpp::Time(), last_rt_time);
+  std::cout << "time()" << std::endl;
 
   // This test assumes system time will not jump backwards during it
   EXPECT_GT(rt_clock.now(last_rt_time), last_rt_time);
+  std::cout << "end test" << std::endl;
 }
